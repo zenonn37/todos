@@ -151,7 +151,7 @@ app.post('/todos',function(req,res) {
 
      var t = _.findWhere(todos,{id:todoId});
        if (!t) {
-         res.status(404).json({"error":"No todo found"});
+         res.status(404).json({"error":"No todo found damn"});
          return;
        }
        var bodySafe  = _.pick(body,'completed','description');
