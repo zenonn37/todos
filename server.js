@@ -148,7 +148,22 @@ app.post('/todos',function(req,res) {
 
    app.delete('/todos/:id',function(req,res) {
      var todoId = parseInt(req.params.id,10);
-
+      db.todo.destroy({
+        where:{
+          id:todoId
+        }
+      })
+      .then(function(data) {
+          if (!data) {
+            res.status(404).send("No Todo Found!");
+            return;
+          }
+          res.status(204).send();
+      })
+      .catch(function(e) {
+        res.status(500);
+      })
+     /*
      var t = _.findWhere(todos,{id:todoId});
        if (!t) {
          res.status(404).json({"error":"No todo found"});
@@ -165,7 +180,7 @@ app.post('/todos',function(req,res) {
 
      console.log(todos);
       res.json(t);
-
+       */
 
    });
 

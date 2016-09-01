@@ -22,13 +22,13 @@ var Todo = sequelize.define('todo',{
 
 sequelize.sync().then(function() {
     console.log("Good!");
-     return Todo.findById(5)
-     .then(function(todo) {
-       if (!todo) {
-         console.log("No Record Found");
-         return;
+     return Todo.destroy({
+       where:{
+         id:1
        }
-       console.log(todo.toJSON());
+     })
+     .then(function(todo) {
+
      })
  /*
     Todo.create({
