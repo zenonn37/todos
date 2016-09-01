@@ -12,8 +12,31 @@ app.get('/',function(req,res) {
   res.send('heroku');
 });
 app.get('/todos',function(req,res) {
-  console.log(todos);
-  res.json(todos);
+  //returns an object/key value pairs;
+  var query =  req.query;
+//  console.log(query.completed);
+  var filteredTodos;
+  if (query.hasOwnProperty('completed') && query.completed === 'true') {
+     filteredTodos = _.where(todos,{completed:true});
+       //console.log("yes its true");
+     //console.log(filteredTodos);
+    return res.json(filteredTodos)
+
+  }else if (query.hasOwnProperty('completed') && query.completed === 'false') {
+      //console.log("yes its false");
+      filteredTodos = _.where(todos,{completed:false});
+      //console.log(filteredTodos);
+     return res.json(filteredTodos)
+  }else {
+    //console.log('called');
+    return res.json(todos);
+  }
+
+  console.log(query);
+
+
+
+  //res.json(filteredTodos);
 });
 app.get('/todos/:id',function(req,res) {
   console.log('called');
