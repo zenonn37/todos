@@ -171,6 +171,36 @@ app.post('/todos',function(req,res) {
 
    app.put('/todos/:id',function(req,res) {
        var todoId = parseInt(req.params.id,10);
+       var body = _.pick(req.body,'completed','description');
+       var atrributes = {};
+
+       if (body.hasOwnProperty('completed')) {
+           atrributes.completed = body.completed;
+       }
+
+       if (body.hasOwnProperty('description')) {
+         atrributes.description = body.description;
+      }
+
+      db.todo.findById(todoId)
+        .then(function(todo) {
+           if (!todo) {
+              res.status(404).send();
+             return;
+           }
+            todo.update(atrributes)
+            .then(function(todo) {
+              res.json(todo.toJSON())
+            },function(e) {
+              res.status(400).json(e);
+            })
+
+
+        },function(e) {
+          res.status(500).send();
+        })
+
+       /*
        var t = _.findWhere(todos,{id:todoId});
          if (!t) {
            res.status(404).json({"error":"No todo found"});
@@ -195,7 +225,7 @@ app.post('/todos',function(req,res) {
 
         _.extend(t, validAtrributes);
         res.json(t);
-
+  */
    });
 var port = process.env.PORT || 4040;
 
