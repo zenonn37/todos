@@ -1,6 +1,7 @@
 var express = require('express')
 var bodyParser = require('body-parser');
 var _ = require('underscore');
+var db = require('./db.js');
 var app = express();
 var todos = [
 
@@ -73,6 +74,22 @@ app.post('/todos',function(req,res) {
 
      var trimDescription = bodySafe.description.trim();
      var completed = bodySafe.completed;
+
+       //db.todo.create
+       //can pass in entire object as well
+       Todo.create({
+         description:trimDescription,
+         completed:completed
+       })
+       .then(function(todo) {
+         console.log('created');
+         res.json(todo.toJSON());
+       })
+       .catch(function(e) {
+         console.log(e);
+         res.status(400).json(e);
+       })
+     /*
      console.log(bodySafe);
    todos.push({
      id:NextId,
@@ -81,8 +98,9 @@ app.post('/todos',function(req,res) {
    })
      NextId += 1;
 
+   */
 
-   res.json(bodySafe);
+   //res.json(bodySafe);
  });
 
    app.delete('/todos/:id',function(req,res) {
@@ -137,6 +155,10 @@ app.post('/todos',function(req,res) {
 
    });
 var port = process.env.PORT || 4040;
-app.listen(port,function() {
-  console.log("running",port);
-});
+
+db.sequelize.sync()
+  .then(function() {
+    app.listen(port,function() {
+      console.log("running",port);
+    });
+  })
