@@ -53,6 +53,20 @@ app.get('/todos/:id',function(req,res) {
   console.log('called');
 
   var todoId = parseInt(req.params.id,10);
+
+   db.todo.findById(todoId)
+     .then(function(todo) {
+       if (!!todo) {
+        res.json(todo.toJSON())
+      }else {
+         res.status(404).send({"error":"Todo not found"})
+      }
+
+     })
+     .catch(function(e) {
+       res.status(500).send({"error":"Not Found"})
+     });
+  /*
    var match = _.findWhere(todos,{id:todoId});
    if (match) {
      res.json(match);
@@ -60,7 +74,9 @@ app.get('/todos/:id',function(req,res) {
      res.status(404).send();
    }
    //res.send("You asked for "+req.params.id);
-})
+   */
+});
+
 app.post('/todos',function(req,res) {
   //varNextId
    var body = req.body;
@@ -77,7 +93,7 @@ app.post('/todos',function(req,res) {
 
        //db.todo.create
        //can pass in entire object as well
-       Todo.create({
+       db.todo.create({
          description:trimDescription,
          completed:completed
        })
