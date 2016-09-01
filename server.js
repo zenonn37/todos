@@ -15,6 +15,11 @@ var todos = [
   id:3,
   description: 'Go to Work',
   completed:true,
+},
+{
+  id:4,
+  description: 'Use Heroku Tonight',
+  completed:true,
 }
 ];
 
