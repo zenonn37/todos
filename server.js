@@ -49,8 +49,24 @@ app.post('/todos',function(req,res) {
      NextId += 1;
 
 
-   res.json(body);
+   res.json(bodySafe);
  });
+
+   app.delete('/todos/:id',function(req,res) {
+     var todoId = parseInt(req.params.id,10);
+
+     var t = _.findWhere(todos,{id:todoId});
+       if (!t) {
+         res.status(404).json({"error":"No todo found"});
+         return;
+       }
+      todos =  _.without(todos,t);
+
+     console.log(todos);
+      res.json(t);
+
+
+   });
 var port = process.env.PORT || 4040;
 app.listen(port,function() {
   console.log("running",port);
