@@ -1,33 +1,17 @@
 var express = require('express')
+var bodyParser = require('body-parser');
 var app = express();
 var todos = [
-  {
-    id:1,
-    description: 'Meet for Cake',
-    completed:false,
-},
-{
-  id:2,
-  description: 'Go to Store',
-  completed:false,
-},
-{
-  id:3,
-  description: 'Go to Work',
-  completed:true,
-},
-{
-  id:4,
-  description: 'Use Heroku Tonight',
-  completed:true,
-}
+
 ];
+var NextId = 1;
 
-
+app.use(bodyParser.json());
 app.get('/',function(req,res) {
   res.send('heroku');
 });
 app.get('/todos',function(req,res) {
+  console.log(todos);
   res.json(todos);
 });
 app.get('/todos/:id',function(req,res) {
@@ -47,6 +31,21 @@ app.get('/todos/:id',function(req,res) {
    }
    //res.send("You asked for "+req.params.id);
 })
+app.post('/todos',function(req,res) {
+  //varNextId
+   var body = req.body;
+   
+
+   todos.push({
+     id:NextId,
+     description:body.description,
+     completed:false
+   })
+     NextId += 1;
+
+
+   res.json(body);
+ });
 var port = process.env.PORT || 4040;
 app.listen(port,function() {
   console.log("running",port);
