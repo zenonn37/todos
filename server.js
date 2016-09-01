@@ -11,26 +11,36 @@ app.use(bodyParser.json());
 app.get('/',function(req,res) {
   res.send('heroku');
 });
+//todos?completed=true&q=Node
 app.get('/todos',function(req,res) {
   //returns an object/key value pairs;
   var query =  req.query;
-//  console.log(query.completed);
-  var filteredTodos;
+
+  var filteredTodos = todos;
   if (query.hasOwnProperty('completed') && query.completed === 'true') {
      filteredTodos = _.where(todos,{completed:true});
-       //console.log("yes its true");
-     //console.log(filteredTodos);
-    return res.json(filteredTodos)
 
   }else if (query.hasOwnProperty('completed') && query.completed === 'false') {
-      //console.log("yes its false");
       filteredTodos = _.where(todos,{completed:false});
-      //console.log(filteredTodos);
-     return res.json(filteredTodos)
-  }else {
+
+
+   }
+
+
+   if (query.hasOwnProperty('q') && query.q.length > 0) {
+       filteredTodos = _.filter(filteredTodos,function(todo) {
+         return todo.description.toLowerCase().indexOf(query.q.toLowerCase()) > -1;
+        //return query.q === todo.description;
+
+     });
+
+     //return res.json(filteredTodos);
+   }
+
+
     //console.log('called');
-    return res.json(todos);
-  }
+    res.json(filteredTodos);
+
 
   console.log(query);
 
