@@ -60,11 +60,47 @@ app.post('/todos',function(req,res) {
          res.status(404).json({"error":"No todo found"});
          return;
        }
+       var bodySafe  = _.pick(body,'completed','description');
+
+       if (!_.isBoolean(body.completed) || !_.isString(body.description
+       || body.description.trim().length === 0)) {
+         return res.status(400).send();
+       }
+
       todos =  _.without(todos,t);
 
      console.log(todos);
       res.json(t);
 
+
+   });
+
+   app.put('/todos/:id',function(req,res) {
+       var todoId = parseInt(req.params.id,10);
+       var t = _.findWhere(todos,{id:todoId});
+         if (!t) {
+           res.status(404).json({"error":"No todo found"});
+           return;
+         }
+
+       var body = _.pick(req.body,'completed','description');
+       var validAtrributes = {};
+
+       if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+           validAtrributes.completed = body.completed;
+       }else if (body.hasOwnProperty('completed')) {
+         return res.status(400).send();
+       }
+
+       if (body.hasOwnProperty('description') && _.isString(body.description)
+     && body.description.trim().length > 0) {
+         validAtrributes.description = body.description;
+       }else if (body.hasOwnProperty('description')) {
+         return res.status(400).send();
+       }
+
+        _.extend(t, validAtrributes);
+        res.json(t);
 
    });
 var port = process.env.PORT || 4040;
