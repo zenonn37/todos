@@ -225,6 +225,23 @@ app.post('/todos',function(req,res) {
         res.json(t);
   */
    });
+
+
+
+  app.post('/users',function(req,res) {
+
+    var body = _.pick(req.body,'email','password');
+      console.log(body);
+      
+      db.user.create(body)
+        .then(function(data) {
+              res.json(data.toJSON());
+        },function(e) {
+          res.status(400).json(e);
+        })
+
+
+  });
 var port = process.env.PORT || 4040;
 
 db.sequelize.sync()
