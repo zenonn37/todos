@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var _ = require('underscore');
 var db = require('./db.js');
 var app = express();
+var bcrypt = require('bcrypt');
 var todos = [
 
 ];
@@ -240,6 +241,16 @@ app.post('/todos',function(req,res) {
           res.status(400).json(e);
         })
 
+
+  });
+  app.post('/users/login',function(req,res) {
+    var body = _.pick(req.body,'email','password');
+      db.user.authenticate(body)
+        .then(function(user) {
+          res.json(user.toPublicJSON());
+        },function(e) {
+           res.status(401).send();
+        })
 
   });
 var port = process.env.PORT || 4040;
