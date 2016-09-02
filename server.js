@@ -19,6 +19,9 @@ app.get('/todos',middleware.requireAuthentication,function(req,res) {
   //returns an object/key value pairs;
   var query =  req.query;
   var where = {};
+  where.userId = req.user.get('id');
+
+
   var out;
   if (query.hasOwnProperty('completed') && query.completed === 'true') {
     where.completed = true;
@@ -83,7 +86,12 @@ app.get('/todos/:id',middleware.requireAuthentication,function(req,res) {
 
   var todoId = parseInt(req.params.id,10);
 
-   db.todo.findById(todoId)
+   db.todo.findOne({
+     where:{
+       id:todoId,
+       userId:req.user.get('id')
+     }
+   })
      .then(function(todo) {
        if (!!todo) {
         res.json(todo.toJSON())
@@ -117,7 +125,7 @@ app.post('/todos',middleware.requireAuthentication,function(req,res) {
    || body.description.trim().length === 0)) {
      return res.status(400).send('problem');
    }
-   
+
 
      var trimDescription = bodySafe.description.trim();
      var completed = bodySafe.completed;
@@ -130,7 +138,12 @@ app.post('/todos',middleware.requireAuthentication,function(req,res) {
        })
        .then(function(todo) {
          console.log('created');
-         res.json(todo.toJSON());
+
+         req.user.addTodo(todo).then(function() {
+             return todo.reload();
+         }).then(function(todo) {
+            res.json(todo.toJSON());
+         })
        })
        .catch(function(e) {
          console.log(e);
@@ -154,7 +167,8 @@ app.post('/todos',middleware.requireAuthentication,function(req,res) {
      var todoId = parseInt(req.params.id,10);
       db.todo.destroy({
         where:{
-          id:todoId
+          id:todoId,
+          userId:req.user.get('id')
         }
       })
       .then(function(data) {
@@ -184,7 +198,12 @@ app.post('/todos',middleware.requireAuthentication,function(req,res) {
          atrributes.description = body.description;
       }
 
-      db.todo.findById(todoId)
+      db.todo.findOne({
+        where:{
+          id:todoId,
+          userId:req.user.get('id')
+        }
+      })
         .then(function(todo) {
            if (!todo) {
               res.status(404).send();
