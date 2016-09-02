@@ -232,10 +232,10 @@ app.post('/todos',function(req,res) {
 
     var body = _.pick(req.body,'email','password');
       console.log(body);
-      
+
       db.user.create(body)
         .then(function(data) {
-              res.json(data.toJSON());
+              res.json(data.toPublicJSON());
         },function(e) {
           res.status(400).json(e);
         })
@@ -244,7 +244,7 @@ app.post('/todos',function(req,res) {
   });
 var port = process.env.PORT || 4040;
 
-db.sequelize.sync()
+db.sequelize.sync({force:true})
   .then(function() {
     app.listen(port,function() {
       console.log("running",port);
