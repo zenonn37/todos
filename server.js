@@ -281,7 +281,7 @@ app.post('/todos',middleware.requireAuthentication,function(req,res) {
   });
 var port = process.env.PORT || 4040;
 
-db.sequelize.sync()
+db.sequelize.sync({force:true})
   .then(function() {
     app.listen(port,function() {
       console.log("running",port);
