@@ -4,6 +4,7 @@ var _ = require('underscore');
 var db = require('./db.js');
 var app = express();
 var bcrypt = require('bcrypt');
+var middleware = require('./middleware.js')(db);
 var todos = [
 
 ];
@@ -14,7 +15,7 @@ app.get('/',function(req,res) {
   res.send('heroku');
 });
 //todos?completed=true&q=Node
-app.get('/todos',function(req,res) {
+app.get('/todos',middleware.requireAuthentication,function(req,res) {
   //returns an object/key value pairs;
   var query =  req.query;
   var where = {};
@@ -77,7 +78,7 @@ app.get('/todos',function(req,res) {
   //res.json(filteredTodos);
   */
 });
-app.get('/todos/:id',function(req,res) {
+app.get('/todos/:id',middleware.requireAuthentication,function(req,res) {
   console.log('called');
 
   var todoId = parseInt(req.params.id,10);
@@ -105,16 +106,18 @@ app.get('/todos/:id',function(req,res) {
    */
 });
 
-app.post('/todos',function(req,res) {
+app.post('/todos',middleware.requireAuthentication,function(req,res) {
   //varNextId
    var body = req.body;
 
    var bodySafe  = _.pick(body,'completed','description');
+      console.log(bodySafe);
 
    if (!_.isBoolean(body.completed) || !_.isString(body.description
    || body.description.trim().length === 0)) {
-     return res.status(400).send();
+     return res.status(400).send('problem');
    }
+   
 
      var trimDescription = bodySafe.description.trim();
      var completed = bodySafe.completed;
@@ -147,7 +150,7 @@ app.post('/todos',function(req,res) {
    //res.json(bodySafe);
  });
 
-   app.delete('/todos/:id',function(req,res) {
+   app.delete('/todos/:id',middleware.requireAuthentication,function(req,res) {
      var todoId = parseInt(req.params.id,10);
       db.todo.destroy({
         where:{
@@ -168,7 +171,7 @@ app.post('/todos',function(req,res) {
 
    });
 
-   app.put('/todos/:id',function(req,res) {
+   app.put('/todos/:id',middleware.requireAuthentication,function(req,res) {
        var todoId = parseInt(req.params.id,10);
        var body = _.pick(req.body,'completed','description');
        var atrributes = {};
@@ -259,7 +262,7 @@ app.post('/todos',function(req,res) {
   });
 var port = process.env.PORT || 4040;
 
-db.sequelize.sync({force:true})
+db.sequelize.sync()
   .then(function() {
     app.listen(port,function() {
       console.log("running",port);
